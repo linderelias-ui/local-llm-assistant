@@ -303,17 +303,47 @@ export default function Home() {
                         "Not connected"
                       )}
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => {
-                        clear();
-                        toast.message("Backend cleared");
-                      }}
-                      disabled={!baseUrl}
-                    >
-                      Clear
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={async () => {
+                          if (!baseUrl) return;
+                          try {
+                            const url = `${baseUrl.replace(/\/+$/, "")}/models`;
+                            const res = await fetch(url, {
+                              method: "GET",
+                              headers: { "Content-Type": "application/json" },
+                            });
+                            if (!res.ok) {
+                              const t = await res.text();
+                              throw new Error(`Test failed (${res.status}): ${t.slice(0, 200)}`);
+                            }
+                            toast.success("✅ Backend reachable");
+                          } catch (e: unknown) {
+                            toast.error(
+                              e instanceof Error
+                                ? e.message
+                                : "Test failed (network/CORS)",
+                            );
+                          }
+                        }}
+                        disabled={!baseUrl}
+                      >
+                        Test
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          clear();
+                          toast.message("Backend cleared");
+                        }}
+                        disabled={!baseUrl}
+                      >
+                        Clear
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
