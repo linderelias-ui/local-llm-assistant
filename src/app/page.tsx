@@ -216,11 +216,11 @@ export default function Home() {
     setSending(true);
 
     try {
-      const res = await fetch("/api/chat", {
+      const url = `${baseUrl.replace(/\/+$/, "")}/chat/completions`;
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          baseUrl,
           model,
           messages: [
             {
@@ -230,6 +230,8 @@ export default function Home() {
             },
             ...nextMessages.map((m) => ({ role: m.role, content: m.content })),
           ],
+          stream: false,
+          temperature: 0.7,
         }),
       });
 
